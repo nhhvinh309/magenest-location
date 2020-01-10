@@ -34,7 +34,7 @@ class Save extends \Magento\Framework\App\Action\Action
     {
         $result = $this->resultJsonFactory->create();
         $param = $this->getRequest()->getParams();
-        $html = '<div class="your-location"> Your location :' . $param["city"] . ' , ' . $param["district"] . ' , ' . $param["ward"] . ' </div>';
+        $html = '<div class="your-location"> Your location :' . $param["city"] . '  ' . $param["district"] . '  ' . $param["ward"] . ' </div>';
         $this->setLocationCookie(json_encode($param));
         return $result->setData(['success' => true, 'value' => $html]);
     }
