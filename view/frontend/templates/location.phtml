@@ -1,0 +1,102 @@
+<?php $cookieData = $block->getCookieData() ?>
+<?php
+if ($cookieData["city"] == "")
+    echo '<div class="your-location"> Edit your location :</div>';
+else {
+    echo '<div class="your-location"> Your location : ' . $cookieData["city"] . ' , ' . $cookieData["district"] . ' , ' . $cookieData["ward"] . ' </div>';
+}
+?>
+
+<div id="popup-modal" style="display:none">
+    <div style="display: block; margin-bottom: 20px">
+        <div style="width: 5% ; display: inline-block"><label for="city">City :</label></div>
+        <select id="city" style="width: 93%">
+            <option value="">Select City</option>
+            <?php
+            foreach ($block->getListCity() as $key => $value):
+                echo '<option value="' . $key . '">' . $value . '</option>';
+            endforeach;
+            ?>
+        </select>
+    </div>
+    <div style="display: block; margin-bottom: 20px">
+        <div style="width: 5% ; display: inline-block"><label for="district">District :</label></div>
+        <select id="district" style="width: 90%">
+            <option value="">Select City First</option>
+        </select>
+    </div>
+    <div style="display: block">
+        <div style="width: 5% ; display: inline-block"><label for="ward">Ward :</label></div>
+        <select id="ward" style="width: 90%">
+            <option value="">Select District First</option>
+        </select>
+    </div>
+</div>
+<script>
+    require(['jquery', 'Magento_Ui/js/modal/modal'], function (modal) {
+        jQuery(document).ready(function () {
+            jQuery(document).on('click', '.your-location', function () {
+                var options = {
+                    type: 'popup',
+                    responsive: true,
+                    innerScroll: true,
+                    title: 'Page Title',
+                    'buttons': [{
+                        text: jQuery.mage.__('Submit'),
+                        click: function () {
+                            this.closeModal();
+                            let city = jQuery("#city option:selected").html();
+                            let district = jQuery("#district option:selected").html();
+                            let ward = jQuery("#ward option:selected").html();
+                            let cityValue = jQuery('#city').val();
+                            let districtValue = jQuery('#district').val();
+                            let wardValue = jQuery('#ward').val();
+
+                            if (cityValue === "") city = "";
+                            if (districtValue === "") district = "";
+                            if (wardValue === "") ward = "";
+                            jQuery.ajax({
+                                showLoader: true,
+                                url: 'location/location/save',
+                                data: {city: city, district: district, ward: ward},
+                                type: "post",
+                                dataType: 'json',
+                            }).done(function (data) {
+                                jQuery('.your-location').empty().append(data.value);
+                            });
+                        }
+                    }]
+                };
+                jQuery("#popup-modal").modal(options).modal('openModal');
+            });
+            jQuery(document).on('change', '#city', function (e) {
+                let selectedText = jQuery("#city option:selected").html();
+                let param = 'district=' + jQuery('#city').val();
+                jQuery.ajax({
+                    showLoader: true,
+                    url: 'location/location/district',
+                    data: param,
+                    type: "GET",
+                    dataType: 'json'
+                }).done(function (data) {
+                    jQuery('#district').empty().append(data.value);
+                    jQuery('#ward').empty().append('<option value="">Select District First</option>');
+                });
+            });
+            jQuery(document).on('change', '#district', function () {
+                let param = 'ward=' + jQuery('#district').val();
+                jQuery.ajax({
+                    showLoader: true,
+                    url: 'location/location/ward',
+                    data: param,
+                    type: "GET",
+                    dataType: 'json'
+                }).done(function (data) {
+                    jQuery('#ward').empty().append(data.value);
+                });
+            });
+        });
+    });
+</script>
+
+
