@@ -6,9 +6,11 @@ use Magento\Framework\View\Element\Template;
 
 class Location extends Template
 {
-    public function __construct(Template\Context $context, array $data = [])
+    protected $storeManager;
+    public function __construct(Template\Context $context, array $data = [],\Magento\Store\Model\StoreManagerInterface $storeManager)
     {
         parent::__construct($context, $data);
+        $this->storeManager= $storeManager;
     }
     public function getListCity(){
         $url = "https://thongtindoanhnghiep.co/api/city";
@@ -27,5 +29,9 @@ class Location extends Template
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $data = $objectManager->get('Magenest\Location\Controller\Location\Save')->getLocationCookie();
         return json_decode($data, true);
+    }
+    public function getBaseUrl()
+    {
+        return $this->storeManager->getStore()->getBaseUrl();
     }
 }

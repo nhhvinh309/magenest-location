@@ -1,16 +1,18 @@
-<?php $cookieData = $block->getCookieData() ?>
 <?php
-if ($cookieData["city"] == "")
-    echo '<div class="your-location"> Edit your location :</div>';
+$cookieData = $block->getCookieData();
+$baseUrl = @$block->getBaseUrl();
+?>
+<?php
+if ($cookieData == "")
+    echo '<div style="display: inline;" class="your-location"> Edit your location</div>';
 else {
-    echo '<div class="your-location"> Your location : ' . $cookieData["city"] . '  ' . $cookieData["district"] . '  ' . $cookieData["ward"] . ' </div>';
+    echo '<div style="display: inline;" class="your-location"> Your location : ' . $cookieData["city"] . '  ' . $cookieData["district"] . '  ' . $cookieData["ward"] . ' </div>';
 }
 ?>
-
 <div id="popup-modal" style="display:none">
     <div style="display: block; margin-bottom: 20px">
         <div style="width: 5% ; display: inline-block"><label for="city">City :</label></div>
-        <select id="city" style="width: 93%">
+        <select id="city" style="width: 90%">
             <option value="">Select City</option>
             <?php
             foreach ($block->getListCity() as $key => $value):
@@ -33,16 +35,16 @@ else {
     </div>
 </div>
 <script>
-    require(['jquery', 'Magento_Ui/js/modal/modal'], function (modal) {
+    require(['jquery'], function () {
         jQuery(document).ready(function () {
             jQuery(document).on('click', '.your-location', function () {
                 var options = {
                     type: 'popup',
                     responsive: true,
                     innerScroll: true,
-                    title: 'Page Title',
+                    title: 'Select your location',
                     'buttons': [{
-                        text: jQuery.mage.__('Submit'),
+                        text: jQuery.mage.__('Save your location'),
                         click: function () {
                             this.closeModal();
                             let city = jQuery("#city option:selected").html();
@@ -51,13 +53,13 @@ else {
                             let cityValue = jQuery('#city').val();
                             let districtValue = jQuery('#district').val();
                             let wardValue = jQuery('#ward').val();
-
                             if (cityValue === "") city = "";
                             if (districtValue === "") district = "";
                             if (wardValue === "") ward = "";
+                            let requestUrl = <?php echo json_encode($block->getBaseUrl()) ?>+'location/location/save';
                             jQuery.ajax({
                                 showLoader: true,
-                                url: 'location/location/save',
+                                url: requestUrl,
                                 data: {city: city, district: district, ward: ward},
                                 type: "post",
                                 dataType: 'json',
@@ -72,9 +74,10 @@ else {
             jQuery(document).on('change', '#city', function (e) {
                 let selectedText = jQuery("#city option:selected").html();
                 let param = 'district=' + jQuery('#city').val();
+                let requestUrl = <?php echo json_encode($block->getBaseUrl()) ?>+'location/location/district';
                 jQuery.ajax({
                     showLoader: true,
-                    url: 'location/location/district',
+                    url: requestUrl,
                     data: param,
                     type: "GET",
                     dataType: 'json'
@@ -85,9 +88,10 @@ else {
             });
             jQuery(document).on('change', '#district', function () {
                 let param = 'ward=' + jQuery('#district').val();
+                let requestUrl = <?php echo json_encode($block->getBaseUrl()) ?>+'location/location/ward';
                 jQuery.ajax({
                     showLoader: true,
-                    url: 'location/location/ward',
+                    url: requestUrl,
                     data: param,
                     type: "GET",
                     dataType: 'json'
