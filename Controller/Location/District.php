@@ -34,6 +34,12 @@ class District extends \Magento\Framework\App\Action\Action
         return $result->setData(['success' => true, 'value' => $html]);
     }
 
+    /**
+     * @todo Không nên dùng trực tiếp json_encode với decode, dùng function trong class vendor/magento/framework/Serialize/SerializerInterface.php của Magento thay thế
+     *
+     * @param $cityID
+     * @return array
+     */
     public function getDistrictByCityID($cityID)
     {
         $url = "https://thongtindoanhnghiep.co/api/city/$cityID/district";
@@ -41,6 +47,7 @@ class District extends \Magento\Framework\App\Action\Action
         $items = json_decode($json, true);
         $listDistrict = [];
         foreach ($items as $item) {
+            // @todo Khi sử dụng array key element (ex: $item["Title"]), nên kiểm tra xem key có tồn tại hay không trước (dùng isset($item["Title"]) để kiểm tra, tránh lỗi Undefined index
             $listDistrict[$item["ID"]] = $item["Title"];
         }
 

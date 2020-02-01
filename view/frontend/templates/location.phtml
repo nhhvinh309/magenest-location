@@ -11,7 +11,7 @@ else {
 ?>
 <div id="popup-modal" style="display:none">
     <div style="display: block; margin-bottom: 20px">
-        <div style="width: 5% ; display: inline-block"><label for="city">City :</label></div>
+        <div style="width: 5% ; display: inline-block"><label for="city"><?= __("City :") ?></label></div> <?php // @todo Thêm dịch cho string khi in ra ?>
         <select id="city" style="width: 90%">
             <option value="">Select City</option>
             <?php
@@ -35,7 +35,7 @@ else {
     </div>
 </div>
 <script>
-    require(['jquery'], function () {
+    require(['jquery'], function () { // @todo Thêm alias cho thư viện js được khai báo để viết rút gọn ở dưới ex:  require(['jquery'], function ($) { var a = $('.a') }
         jQuery(document).ready(function () {
             jQuery(document).on('click', '.your-location', function () {
                 var options = {
@@ -45,6 +45,7 @@ else {
                     title: 'Select your location',
                     'buttons': [{
                         text: jQuery.mage.__('Save your location'),
+	                    class: "action primary",
                         click: function () {
                             this.closeModal();
                             let city = jQuery("#city option:selected").html();
@@ -56,8 +57,8 @@ else {
                             if (cityValue === "") city = "";
                             if (districtValue === "") district = "";
                             if (wardValue === "") ward = "";
-                            let requestUrl = <?php echo json_encode($block->getBaseUrl()) ?>+'location/location/save';
-                            jQuery.ajax({
+                            let requestUrl = <?php echo json_encode($block->getBaseUrl()) ?>+'location/location/save'; // @todo Không dùng nối string đối với url, dùng thư viện js của Magento mage/url hoặc $block->getUrl('url-path')
+                            jQuery.ajax({ // Bên trên dùng $block->getUrl('location/location/save') cho kq tương tự, KHÔNG dùng let thay cho var, một số trình duyệt chưa hỗ trợ let của js
                                 showLoader: true,
                                 url: requestUrl,
                                 data: {city: city, district: district, ward: ward},
